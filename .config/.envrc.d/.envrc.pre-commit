@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Check if pre-commit config exists
 [ -f "${CONFIG_DIR}/.pre-commit-config.yaml" ] && {
