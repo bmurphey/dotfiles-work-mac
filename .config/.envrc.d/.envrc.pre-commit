@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Check if pre-commit config exists
+[ -f "${CONFIG_DIR}/.pre-commit-config.yaml" ] && {
+
+    # Install the pre-commit hooks if not already installed
+    [ -d "${PROJECT_DIR}/.git" ] && {
+        [ -f "${PROJECT_DIR}/.git/hooks/pre-commit" ] || {
+            info "Installing pre-commit hooks for the first time" && pre-commit install --config "${CONFIG_DIR}/.pre-commit-config.yaml"
+        }
+    }
+
+    # Update pre-commit hooks
+    date="$(date +'%F')"
+    export date
+
+    if [ "${PRE_COMMIT_UPDATED}" == "${date}" ]; then
+        info "pre-commit already updated today; skipping."
+
+    # We should guarantee that perl will be present and can always edit a file in place
+    elif grep -Fq PRE_COMMIT_UPDATED "${CONFIG_DIR}/.env" && [ "${PRE_COMMIT_UPDATED}" != "${date}" ]; then
+        info "pre-commit not yet updated today; updating."
+        if has perl; then
+            info "Updating PRE_COMMIT_UPDATED environment variable"
+            perl -p -i -e 's/^(PRE_COMMIT_UPDATED)=([\d-]+)?/\1=$ENV{date}/g' "${CONFIG_DIR}/.env"
+        else
+            error "perl not found"
+            exit 1
+        fi
+
+        pre-commit autoupdate --config "${CONFIG_DIR}/.pre-commit-config.yaml"
+
+    elif ! grep -Fq PRE_COMMIT_UPDATED "${CONFIG_DIR}/.env"; then
+        warn "PRE_COMMIT_UPDATED variable not found; adding to ${CONFIG_DIR}/.env."
+        echo "PRE_COMMIT_UPDATED=${date}" >> "${CONFIG_DIR}/.env"
+
+        pre-commit autoupdate --config "${CONFIG_DIR}/.pre-commit-config.yaml"
+
+    else
+        error "Something unexpected happened; time to investigate."
+        exit 1
+    fi
+
+    unset date
+}

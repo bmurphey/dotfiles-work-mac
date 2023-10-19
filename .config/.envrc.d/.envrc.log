@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+function _log() {
+    local args=$-
+    set +x
+
+    local id="$1"
+    shift
+
+    echo -n '['
+
+    echo -n "$id"
+
+    if [ "${id}" == "INFO" ] || [ "${id}" == "WARN" ]; then
+        echo -n ' ] '
+    else
+        echo -n '] '
+    fi
+
+    echo "${@:-}"
+
+    set $args
+} >&2
+
+
+function info() {
+  _log INFO "$*"
+}
+
+export -f info
+
+function warn() {
+  _log WARN "$*"
+}
+
+export -f warn
+
+function error() {
+  _log ERROR "$*"
+}
+
+export -f error

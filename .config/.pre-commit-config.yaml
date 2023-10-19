@@ -1,0 +1,44 @@
+---
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      - id: detect-aws-credentials
+        args: [--allow-missing-credentials]
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: fix-byte-order-marker
+      - id: pretty-format-json
+        args: [--autofix, --no-sort-keys, --indent=4]
+      - id: trailing-whitespace
+
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: 3.0.0
+    hooks:
+      - id: shellcheck
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        args: [-c, .config/.yamllint]
+
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.2.3
+    hooks:
+      - id: yamlfmt
+        args: [--mapping, '2', --sequence, '4', --offset, '2']
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.37.0
+    hooks:
+      - id: markdownlint
